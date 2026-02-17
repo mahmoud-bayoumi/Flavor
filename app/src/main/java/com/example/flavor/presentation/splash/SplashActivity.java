@@ -11,8 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.flavor.R;
-import com.example.flavor.presentation.login.LoginActivity;
-import com.example.flavor.presentation.signup.SignUpActivity;
+import com.example.flavor.presentation.auth.login.LoginActivity;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
 

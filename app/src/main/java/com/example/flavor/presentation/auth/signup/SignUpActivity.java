@@ -1,4 +1,4 @@
-package com.example.flavor.presentation.signup;
+package com.example.flavor.presentation.auth.signup;
 
 import android.graphics.Color;
 import android.graphics.Typeface;

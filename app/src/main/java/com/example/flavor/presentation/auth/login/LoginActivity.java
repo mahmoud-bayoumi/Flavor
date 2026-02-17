@@ -1,4 +1,4 @@
-package com.example.flavor.presentation.login;
+package com.example.flavor.presentation.auth.login;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,9 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import com.example.flavor.MainActivity;
 import com.example.flavor.R;
-import com.example.flavor.presentation.signup.SignUpActivity;
+import com.example.flavor.presentation.main.activity.MainActivity;
+import com.example.flavor.presentation.auth.signup.SignUpActivity;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     private LoginPresenter presenter;

@@ -1,4 +1,4 @@
-package com.example.flavor.presentation.login;
+package com.example.flavor.presentation.auth.login;
 
 public interface LoginContract {
     interface View {

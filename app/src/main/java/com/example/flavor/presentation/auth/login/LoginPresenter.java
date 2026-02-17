@@ -1,4 +1,4 @@
-package com.example.flavor.presentation.login;
+package com.example.flavor.presentation.auth.login;
 
 public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View view;

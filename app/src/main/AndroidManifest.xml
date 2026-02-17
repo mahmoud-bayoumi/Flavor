@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Flavor">
         <activity
-            android:name=".presentation.signup.SignUpActivity"
+            android:name=".presentation.main.activity.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.login.LoginActivity"
+            android:name=".presentation.auth.signup.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.auth.login.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.splash.SplashActivity"
