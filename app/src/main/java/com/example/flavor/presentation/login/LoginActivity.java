@@ -37,13 +37,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
         presenter = new LoginPresenter(this);
 
-        // Initialize Views
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        tvGoToSignUp = findViewById(R.id.tvGoToSignUp);
+        initViews();
 
-        // Setup the "Create Account" spannable text
         setupBottomText();
 
         btnLogin.setOnClickListener(v ->
@@ -51,6 +46,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                         etPassword.getText().toString().trim()));
     }
 
+    private void initViews(){
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        tvGoToSignUp = findViewById(R.id.tvGoToSignUp);
+
+    }
     private void setupBottomText() {
         String fullText = "Don't have an account? Create Account";
         SpannableString spannable = new SpannableString(fullText);
