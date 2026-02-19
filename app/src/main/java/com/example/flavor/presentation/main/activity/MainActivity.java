@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             }else if(id == R.id.nav_favorites){
                 selectedFragment = new FavoritesFragment();
             }else if(id == R.id.nav_profile){
-            //     selectedFragment = new ProfileFragment();
+                 selectedFragment = new ProfileFragment();
             }
 
             return loadFragment(selectedFragment);
