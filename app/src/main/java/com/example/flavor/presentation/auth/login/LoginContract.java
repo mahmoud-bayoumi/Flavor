@@ -1,8 +1,8 @@
 package com.example.flavor.presentation.auth.login;
 
 public interface LoginContract {
-    interface View {
 
+    interface View {
         void showLoading();
         void hideLoading();
         void onLoginSuccess();
@@ -11,7 +11,8 @@ public interface LoginContract {
 
     interface Presenter {
         void login(String email, String password);
-        void loginWithGoogle();
-        void loginWithApple();
+        void loginWithGoogle(String idToken);
+        void loginWithFacebook();
+        void detach();
     }
 }

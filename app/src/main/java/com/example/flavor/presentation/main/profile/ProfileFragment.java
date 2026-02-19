@@ -15,7 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.flavor.R;
+import com.example.flavor.core.storage.PrefsManager;
+import com.example.flavor.data.repo.AuthRepository;
 import com.example.flavor.presentation.auth.login.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ProfileFragment extends Fragment {
 
@@ -55,17 +58,18 @@ public class ProfileFragment extends Fragment {
     }
 
     private void handleLogout() {
-        Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
-
-        // Redirect to Login Activity
-        Intent intent = new Intent(getActivity(), LoginActivity.class);
-
-        // Ensure the user cannot return to the profile after logging out
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-
-        if (getActivity() != null) {
-            getActivity().finish();
-        }
+        AuthRepository.getInstance(requireContext())
+                .logout()
+                .subscribe(
+                        () -> {
+                            Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            if (getActivity() != null) getActivity().finish();
+                        },
+                        throwable -> Toast.makeText(getContext(), "Logout failed: " + throwable.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
+
 }
