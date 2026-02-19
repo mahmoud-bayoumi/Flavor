@@ -45,6 +45,24 @@ public class AuthFirebaseDatasource {
                         })
         );
     }
+    public Single<FirebaseUser> signInWithEmailAndPassword(
+            String email, String password) {
+
+        return Single.create(emitter ->
+                firebaseAuth
+                        .signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener(result -> {
+                            if (!emitter.isDisposed()) {
+                                emitter.onSuccess(result.getUser());
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            if (!emitter.isDisposed()) {
+                                emitter.onError(e);
+                            }
+                        })
+        );
+    }
 
     public Single<Boolean> saveUser(User user) {
         return Single.create(emitter ->

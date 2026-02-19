@@ -30,6 +30,10 @@ public class AuthRepository {
         return authFirebaseDatasource
                 .createUserWithEmailAndPassword(email, password);
     }
+    public Single<FirebaseUser> signInWithEmailAndPassword(
+            String email, String password) {
+        return authFirebaseDatasource.signInWithEmailAndPassword(email, password);
+    }
 
     public Single<Boolean> saveUser(User user) {
         return authFirebaseDatasource.saveUser(user);
