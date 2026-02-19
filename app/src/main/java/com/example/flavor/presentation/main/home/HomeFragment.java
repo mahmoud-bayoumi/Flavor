@@ -39,10 +39,17 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void showRecipes(List<Recipe> recipes) {
 
-        HomeAdapter adapter = new HomeAdapter(recipes);
+        HomeAdapter adapter = new HomeAdapter(recipes, recipe -> presenter.onRecipeClicked(recipe));
         recyclerView.setAdapter(adapter);
     }
+    @Override
+    public void navigateToDetails(Recipe recipe) {
+         android.content.Intent intent = new android.content.Intent(getActivity(),
+                com.example.flavor.presentation.mealdetails.MealDetailsActivity.class);
 
+         intent.putExtra("RECIPE_EXTRA", recipe);
+        startActivity(intent);
+    }
     @Override public void showLoading() { /* e.g. progressBar.setVisibility(View.VISIBLE); */ }
     @Override public void hideLoading() { /* e.g. progressBar.setVisibility(View.GONE); */ }
 }

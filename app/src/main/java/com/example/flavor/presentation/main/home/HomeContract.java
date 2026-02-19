@@ -9,6 +9,7 @@ public interface HomeContract {
         void showRecipes(List<Recipe> recipes);
         void showLoading();
         void hideLoading();
+        void navigateToDetails(Recipe recipe);
     }
 
     interface Presenter {

@@ -29,6 +29,8 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void onRecipeClicked(Recipe recipe) {
-        // Handle logic
+        if (view != null) {
+            view.navigateToDetails(recipe);
+        }
     }
 }

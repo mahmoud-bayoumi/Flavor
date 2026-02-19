@@ -1,5 +1,8 @@
 package com.example.flavor.data.model;
-public class Recipe {
+
+import java.io.Serializable;
+
+public class Recipe implements Serializable {
     private String title;
     private String price;
     private String rating;

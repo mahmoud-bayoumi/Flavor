@@ -12,12 +12,19 @@ import com.example.flavor.data.model.Recipe;
 import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public interface OnRecipeClickListener {
+        void onRecipeClick(Recipe recipe);
+    }
+
     private static final int TYPE_BANNER = 0;
     private static final int TYPE_ITEM = 1;
     private List<Recipe> recipes;
+    private OnRecipeClickListener listener;
 
-    public HomeAdapter(List<Recipe> recipes) {
+    // Corrected Constructor
+    public HomeAdapter(List<Recipe> recipes, OnRecipeClickListener listener) {
         this.recipes = recipes;
+        this.listener = listener;
     }
 
     @Override
@@ -40,17 +47,22 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == TYPE_ITEM) {
-            Recipe recipe = recipes.get(position - 1); // Offset for banner
+            Recipe recipe = recipes.get(position - 1);
             RecipeViewHolder rvh = (RecipeViewHolder) holder;
             rvh.title.setText(recipe.getTitle());
             rvh.price.setText(recipe.getPrice());
             rvh.rating.setText(recipe.getRating());
+
+            // This now works because 'listener' is assigned in the constructor
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onRecipeClick(recipe);
+            });
         }
     }
 
     @Override
     public int getItemCount() {
-        return recipes.size() + 1; // +1 for the Banner
+        return recipes.size() + 1;
     }
 
     static class RecipeViewHolder extends RecyclerView.ViewHolder {

@@ -45,4 +45,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("com.airbnb.android:lottie:6.3.0")
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
 }
