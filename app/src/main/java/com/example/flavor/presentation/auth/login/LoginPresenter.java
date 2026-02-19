@@ -44,12 +44,28 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void loginWithGoogle() {
-        // Will be implemented later
+    public void loginWithGoogle(String idToken) {
+
+        view.showLoading();
+
+        compositeDisposable.add(
+                authRepository
+                        .signInWithGoogle(idToken)
+                        .subscribe(
+                                firebaseUser -> {
+                                    view.hideLoading();
+                                    view.onLoginSuccess();
+                                },
+                                throwable -> {
+                                    view.hideLoading();
+                                    view.onLoginError(throwable.getMessage());
+                                }
+                        )
+        );
     }
 
     @Override
-    public void loginWithApple() {
+    public void loginWithFacebook() {
         // Will be implemented later
     }
 

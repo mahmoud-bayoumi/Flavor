@@ -23,13 +23,20 @@ import androidx.appcompat.widget.AppCompatButton;
 import com.example.flavor.R;
 import com.example.flavor.presentation.main.activity.MainActivity;
 import com.example.flavor.presentation.auth.signup.SignUpActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     private LoginPresenter presenter;
     private EditText etEmail, etPassword;
     private AppCompatButton btnLogin; // Use AppCompatButton for custom backgrounds
     private TextView tvGoToSignUp;
-
+    private GoogleSignInClient googleSignInClient;
+    private static final int RC_GOOGLE_SIGN_IN = 1001;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +45,19 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         presenter = new LoginPresenter(this , this);
 
         initViews();
+        setupGoogleSignIn();
+        setupSocialButtons();
 
         setupBottomText();
+
 
         btnLogin.setOnClickListener(v ->
                 presenter.login(etEmail.getText().toString().trim(),
                         etPassword.getText().toString().trim()));
+
+
     }
+
 
     private void initViews(){
         etEmail = findViewById(R.id.etEmail);
@@ -87,6 +100,25 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         tvGoToSignUp.setMovementMethod(LinkMovementMethod.getInstance());
         tvGoToSignUp.setHighlightColor(Color.TRANSPARENT);
     }
+
+    private void setupGoogleSignIn() {
+        GoogleSignInOptions gso =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+    private void setupSocialButtons() {
+        findViewById(R.id.btnGoogle).setOnClickListener(v -> {
+            googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+            });
+        });
+    }
+
     @Override
     public void onLoginSuccess() {
         startActivity(new Intent(this, MainActivity.class));
@@ -112,10 +144,30 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     protected void onDestroy() {
+        presenter.detach();
         super.onDestroy();
-        if (presenter != null) {
-            // It's good practice to cleanup the presenter reference
-            // if you implemented a cleanup method there.
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null && account.getIdToken() != null) {
+                    // Pass token to presenter
+                    presenter.loginWithGoogle(account.getIdToken());
+                } else {
+                    Toast.makeText(this, "Google sign-in failed", Toast.LENGTH_SHORT).show();
+                }
+            } catch (ApiException e) {
+                Toast.makeText(this, "Google sign-in error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
 }

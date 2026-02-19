@@ -56,6 +56,36 @@ public class SignUpPresenter implements SignUpContract.Presenter {
                         )
         );
     }
+    @Override
+    public void signUpWithGoogle(String idToken) {
+
+        view.showLoading();
+
+        compositeDisposable.add(
+                authRepository
+                        .signInWithGoogle(idToken)
+                        .flatMap(firebaseUser -> {
+
+                            User user = new User(
+                                    firebaseUser.getUid(),
+                                    firebaseUser.getDisplayName(),
+                                    firebaseUser.getEmail()
+                            );
+
+                            return authRepository.saveUser(user);
+                        })
+                        .subscribe(
+                                success -> {
+                                    view.hideLoading();
+                                    view.onSignUpSuccess();
+                                },
+                                throwable -> {
+                                    view.hideLoading();
+                                    view.onSignUpError(throwable.getMessage());
+                                }
+                        )
+        );
+    }
 
     @Override
     public void detach() {

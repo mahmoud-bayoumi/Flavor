@@ -11,8 +11,8 @@ public interface LoginContract {
 
     interface Presenter {
         void login(String email, String password);
-        void loginWithGoogle();
-        void loginWithApple();
+        void loginWithGoogle(String idToken);
+        void loginWithFacebook();
         void detach();
     }
 }

@@ -35,6 +35,9 @@ public class AuthRepository {
         return authFirebaseDatasource.signInWithEmailAndPassword(email, password);
     }
 
+    public Single<FirebaseUser> signInWithGoogle(String idToken) {
+        return authFirebaseDatasource.signInWithGoogle(idToken);
+    }
     public Single<Boolean> saveUser(User user) {
         return authFirebaseDatasource.saveUser(user);
     }

@@ -1,5 +1,6 @@
 package com.example.flavor.presentation.auth.signup;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -19,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.flavor.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public class SignUpActivity extends AppCompatActivity implements SignUpContract.View {
 
@@ -26,6 +30,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
     private EditText etName, etEmail, etPassword;
     private AppCompatButton btnSignUp;
     private TextView tvGoToLogin;
+    private static final int RC_GOOGLE_SIGN_IN = 1001;
+    private GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         presenter = new SignUpPresenter(this, this);
 
         initViews();
+        setupGoogleSignIn();
+        setupSocialButtons();
         setupBottomText();
 
         btnSignUp.setOnClickListener(v -> {
@@ -87,7 +95,32 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         tvGoToLogin.setHighlightColor(Color.TRANSPARENT);
     }
 
+    private void setupGoogleSignIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+    private void setupSocialButtons() {
+        findViewById(R.id.btnGoogle).setOnClickListener(v -> {
+            googleSignInClient.revokeAccess().addOnCompleteListener(task -> {
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+            });
+        });
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            GoogleSignIn.getSignedInAccountFromIntent(data)
+                    .addOnSuccessListener(account -> presenter.signUpWithGoogle(account.getIdToken()))
+                    .addOnFailureListener(e -> onSignUpError(e.getMessage()));
+        }
+    }
 
     @Override
     public void onSignUpSuccess() {
