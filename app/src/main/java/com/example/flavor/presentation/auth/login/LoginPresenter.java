@@ -2,7 +2,9 @@ package com.example.flavor.presentation.auth.login;
 
 import android.content.Context;
 
+import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.data.repo.AuthRepository;
+import com.google.firebase.auth.FirebaseUser;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
@@ -10,11 +12,13 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginContract.View view;
     private final AuthRepository authRepository;
+    private final PrefsManager prefsManager;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public LoginPresenter(LoginContract.View view, Context context) {
         this.view = view;
         this.authRepository = AuthRepository.getInstance(context);
+        this.prefsManager = PrefsManager.getInstance(context);
     }
 
     @Override
@@ -33,6 +37,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                         .subscribe(
                                 firebaseUser -> {
                                     view.hideLoading();
+                                    saveUserLogin(firebaseUser);
                                     view.onLoginSuccess();
                                 },
                                 throwable -> {
@@ -54,6 +59,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                         .subscribe(
                                 firebaseUser -> {
                                     view.hideLoading();
+                                    prefsManager.setLoggedInUser(firebaseUser.getUid());
+
                                     view.onLoginSuccess();
                                 },
                                 throwable -> {
@@ -63,7 +70,12 @@ public class LoginPresenter implements LoginContract.Presenter {
                         )
         );
     }
-
+    private void saveUserLogin(FirebaseUser firebaseUser) {
+        if (firebaseUser != null) {
+            // Save UID to SharedPreferences
+            prefsManager.setLoggedInUser(firebaseUser.getUid());
+        }
+    }
     @Override
     public void loginWithFacebook() {
         // Will be implemented later

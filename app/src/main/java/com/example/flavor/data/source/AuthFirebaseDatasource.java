@@ -107,4 +107,7 @@ public class AuthFirebaseDatasource {
                         })
         );
     }
+    public void logout() {
+        firebaseAuth.signOut();
+    }
 }

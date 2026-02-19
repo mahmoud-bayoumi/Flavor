@@ -2,20 +2,23 @@ package com.example.flavor.data.repo;
 
 import android.content.Context;
 
+import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.data.model.User;
 import com.example.flavor.data.source.AuthFirebaseDatasource;
 import com.google.firebase.auth.FirebaseUser;
 
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 
 public class AuthRepository {
 
     private static AuthRepository instance;
     private final AuthFirebaseDatasource authFirebaseDatasource;
-
+    private final PrefsManager prefsManager;
     private AuthRepository(Context context) {
         authFirebaseDatasource =
                 AuthFirebaseDatasource.getInstance(context);
+        prefsManager = PrefsManager.getInstance(context);
     }
 
     public static AuthRepository getInstance(Context context) {
@@ -40,5 +43,12 @@ public class AuthRepository {
     }
     public Single<Boolean> saveUser(User user) {
         return authFirebaseDatasource.saveUser(user);
+    }
+
+    public Completable logout() {
+        return Completable.fromAction(() -> {
+            authFirebaseDatasource.logout();
+            prefsManager.clearLoginState();
+        });
     }
 }

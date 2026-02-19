@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.flavor.R;
+import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.presentation.main.activity.MainActivity;
 import com.example.flavor.presentation.auth.signup.SignUpActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -40,23 +41,28 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PrefsManager prefsManager = PrefsManager.getInstance(this);
+        if (prefsManager.isLoggedIn()) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
-        presenter = new LoginPresenter(this , this);
-
+        presenter = new LoginPresenter(this, this);
         initViews();
         setupGoogleSignIn();
         setupSocialButtons();
-
         setupBottomText();
-
 
         btnLogin.setOnClickListener(v ->
                 presenter.login(etEmail.getText().toString().trim(),
-                        etPassword.getText().toString().trim()));
-
-
+                        etPassword.getText().toString().trim())
+        );
     }
+
 
 
     private void initViews(){
@@ -144,9 +150,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     protected void onDestroy() {
-        presenter.detach();
+        if (presenter != null) {
+            presenter.detach();
+            presenter = null;
+        }
         super.onDestroy();
     }
+
 
 
     @Override
