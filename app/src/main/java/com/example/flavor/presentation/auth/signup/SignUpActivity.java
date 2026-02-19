@@ -32,8 +32,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-
-        presenter = new SignUpPresenter(this);
+        presenter = new SignUpPresenter(this, this);
 
         initViews();
         setupBottomText();
@@ -114,4 +113,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         btnSignUp.setEnabled(true);
         btnSignUp.setText("Create Account →");
     }
+
+    @Override
+    protected void onDestroy() {
+        presenter.detach();
+        super.onDestroy();
+    }
+
 }
