@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.flavor.MainActivity;
 import com.example.flavor.R;
+import com.example.flavor.presentation.auth.login.LoginActivity;
 
 public class SplashActivity extends AppCompatActivity implements SplashContract.View {
 
@@ -54,7 +54,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     @Override
     public void navigateToNextScreen() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
