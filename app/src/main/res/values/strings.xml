@@ -9,6 +9,8 @@
     <string name="welcome_back">Welcome back</string>
     <string name="slogan">Your personal kitchen companion</string>
     <string name="app_title">Flavor</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">
+       52137478363-3ikvg88vmjl1a5dsebf7beq9unh4tk4v.apps.googleusercontent.com
+    </string>
 </resources>

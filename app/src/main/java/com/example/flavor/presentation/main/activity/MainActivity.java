@@ -4,7 +4,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.flavor.R;
+import com.example.flavor.presentation.main.favorites.FavoritesFragment;
 import com.example.flavor.presentation.main.home.HomeFragment;
+import com.example.flavor.presentation.main.profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_explore) {
                 // selectedFragment = new ExploreFragment();
             }else if(id == R.id.nav_favorites){
-                // selectedFragment = new FavoritesFragment();
+                selectedFragment = new FavoritesFragment();
             }else if(id == R.id.nav_profile){
-                // selectedFragment = new ProfileFragment();
+                 selectedFragment = new ProfileFragment();
             }
 
             return loadFragment(selectedFragment);

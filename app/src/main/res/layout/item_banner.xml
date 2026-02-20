@@ -1,40 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:padding="16dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Meal of the Day"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="View Details"
-            android:textColor="#F58D2D"/>
-    </RelativeLayout>
-
+    <!-- Banner Image with overlay -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:cardCornerRadius="16dp"
-        app:cardElevation="0dp">
+        app:cardElevation="4dp">
 
-        <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <ImageView
-                android:id="@+id/bannerImage"
+                android:id="@+id/ivBannerImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/ic_placeholder" />
 
             <View
                 android:layout_width="match_parent"
@@ -42,24 +30,29 @@
                 android:background="#4D000000" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/llBannerText"
+                android:orientation="vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="16dp"
-                android:orientation="vertical">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
                 <TextView
+                    android:id="@+id/tvBannerCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GREEK CUISINE"
-                    android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:text="CATEGORY"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"/>
+
                 <TextView
+                    android:id="@+id/tvBannerTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mediterranean Salad"
-                    android:textColor="@color/white"
+                    android:text="Meal Title"
+                    android:textColor="@android:color/white"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
             </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -69,9 +62,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_margin="16dp"
                 app:cardBackgroundColor="#F58D2D"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="0dp">
+                app:cardCornerRadius="10dp">
 
                 <ImageButton
                     android:id="@+id/btnAddMealOfDay"
@@ -79,41 +70,25 @@
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackground"
                     android:src="@android:drawable/ic_input_add"
-                    android:padding="8dp"
-                    app:tint="@color/white" />
-
+                    app:tint="@android:color/white"
+                    android:padding="8dp"/>
             </com.google.android.material.card.MaterialCardView>
+
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Horizontal categories list -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:scrollbars="none">
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All"
-                android:backgroundTint="#F58D2D"
-                app:cornerRadius="20dp" />
-            <com.google.android.material.button.MaterialButton
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Breakfast"
-                android:textColor="#757575" />
-        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
     </HorizontalScrollView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp"
-        android:text="Suggested for You"
-        android:textStyle="bold"
-        android:textSize="18sp"/>
 </LinearLayout>
