@@ -17,9 +17,9 @@ public class FavoritesPresenter implements FavoritesContract.Presenter {
     public void loadFavorites() {
         // Mapping your model fields: title, price (time), rating (kcal)
         recipeList = new ArrayList<>();
-        recipeList.add(new Recipe("Summer Avocado & Quinoa Salad", "15m", "320 kcal", R.drawable.ic_launcher_background));
-        recipeList.add(new Recipe("Creamy Wild Mushroom Pasta", "25m", "540 kcal", R.drawable.ic_launcher_background));
-        recipeList.add(new Recipe("Berry Explosion Breakfast Bowl", "10m", "280 kcal", R.drawable.ic_launcher_background));
+   //     recipeList.add(new Recipe("Summer Avocado & Quinoa Salad", "15m", "320 kcal", R.drawable.ic_launcher_background));
+    //    recipeList.add(new Recipe("Creamy Wild Mushroom Pasta", "25m", "540 kcal", R.drawable.ic_launcher_background));
+     //   recipeList.add(new Recipe("Berry Explosion Breakfast Bowl", "10m", "280 kcal", R.drawable.ic_launcher_background));
 
         view.showFavorites(recipeList);
     }

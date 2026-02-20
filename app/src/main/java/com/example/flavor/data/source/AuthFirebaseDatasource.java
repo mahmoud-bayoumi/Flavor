@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.Single;
 
 public class AuthFirebaseDatasource {
 

@@ -5,7 +5,8 @@ import android.content.Context;
 import com.example.flavor.data.model.User;
 import com.example.flavor.data.repo.AuthRepository;
 
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.disposables.CompositeDisposable;
+
 
 public class SignUpPresenter implements SignUpContract.Presenter {
 

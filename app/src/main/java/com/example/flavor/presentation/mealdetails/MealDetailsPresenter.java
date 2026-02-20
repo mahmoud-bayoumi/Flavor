@@ -16,8 +16,8 @@ public class MealDetailsPresenter implements MealDetailsContract.Presenter {
     @Override
     public void loadMealDetails(String recipeId) {
         // Mocking Beef Wellington data
-        Recipe recipe = new Recipe("Beef Wellington", "45 mins", "850 kcal", R.drawable.ic_launcher_background);
-        view.showMealDetails(recipe);
+   //     Recipe recipe = new Recipe("Beef Wellington", "45 mins", "850 kcal", R.drawable.ic_launcher_background);
+   //     view.showMealDetails(recipe);
 
         // Mocking Steps
         List<String> steps = new ArrayList<>();
