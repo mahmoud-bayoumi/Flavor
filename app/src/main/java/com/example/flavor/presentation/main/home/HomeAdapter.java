@@ -1,15 +1,12 @@
 package com.example.flavor.presentation.main.home;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.flavor.R;
@@ -19,158 +16,144 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
-public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class HomeAdapter {
 
     public interface OnRecipeClickListener {
         void onRecipeClick(Recipe recipe);
     }
 
-    private static final int TYPE_BANNER = 0;
-    private static final int TYPE_ITEM = 1;
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category, int position);
+    }
 
-    private List<Recipe> recipes;
-    private List<Category> categories;
-    private OnRecipeClickListener listener;
     private Recipe randomMeal;
+    private List<Category> categories;
+    private List<Recipe> recipes;
 
-    public HomeAdapter(List<Recipe> recipes, List<Category> categories, OnRecipeClickListener listener) {
+    private int selectedCategoryIndex = 0;
+
+    private final Context context;
+    private final LinearLayout bannerContainer;
+    private final LinearLayout llRecipes;
+
+    private final OnRecipeClickListener recipeListener;
+    private final OnCategoryClickListener categoryListener;
+
+    public HomeAdapter(
+            Context context,
+            LinearLayout bannerContainer,
+            LinearLayout llRecipes,
+            List<Recipe> recipes,
+            List<Category> categories,
+            OnRecipeClickListener recipeListener,
+            OnCategoryClickListener categoryListener
+    ) {
+        this.context = context;
+        this.bannerContainer = bannerContainer;
+        this.llRecipes = llRecipes;
         this.recipes = recipes;
         this.categories = categories;
-        this.listener = listener;
+        this.recipeListener = recipeListener;
+        this.categoryListener = categoryListener;
     }
-
-    @Override
-    public int getItemViewType(int position) {
-        return (position == 0) ? TYPE_BANNER : TYPE_ITEM;
-    }
-
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_BANNER) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner, parent, false);
-            return new BannerViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recipe, parent, false);
-            return new RecipeViewHolder(view);
-        }
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
-        if (getItemViewType(position) == TYPE_BANNER) {
-            if (randomMeal == null) return;
-
-            BannerViewHolder bvh = (BannerViewHolder) holder;
-            bvh.title.setText(randomMeal.getTitle());
-            bvh.category.setText(randomMeal.getCategory());
-
-            Glide.with(bvh.itemView.getContext())
-                    .load(randomMeal.getImageUrl())
-                    .placeholder(R.drawable.ic_placeholder)
-                    .into(bvh.image);
-
-            if (categories != null) {
-                bvh.setupCategories(categories);
-            }
-
-            holder.itemView.setOnClickListener(v ->
-                    listener.onRecipeClick(randomMeal)
-            );
-            return;
-        }
-
-         int recipePosition = position - 1;
-        if (recipePosition < 0 || recipePosition >= recipes.size()) return;
-
-        Recipe recipe = recipes.get(recipePosition);
-        RecipeViewHolder rvh = (RecipeViewHolder) holder;
-
-        rvh.title.setText(recipe.getTitle());
-        rvh.price.setText(recipe.getPrice());
-        rvh.rating.setText(recipe.getRating());
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onRecipeClick(recipe);
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return (recipes == null || recipes.isEmpty()) ? 1 : recipes.size() + 1;
-    }
-
-
-    static class RecipeViewHolder extends RecyclerView.ViewHolder {
-        TextView title, price, rating;
-
-        public RecipeViewHolder(View v) {
-            super(v);
-            title = v.findViewById(R.id.tvTitle);
-            price = v.findViewById(R.id.tvPrice);
-            rating = v.findViewById(R.id.tvRating);
-        }
-    }
-
-
-    static class BannerViewHolder extends RecyclerView.ViewHolder {
-        TextView title, category;
-        ImageView image;
-        LinearLayout llCategories;
-        private MaterialButton selectedButton = null;
-
-        public BannerViewHolder(View v) {
-            super(v);
-            title = v.findViewById(R.id.tvBannerTitle);
-            category = v.findViewById(R.id.tvBannerCategory);
-            image = v.findViewById(R.id.ivBannerImage);
-            llCategories = v.findViewById(R.id.llCategories);
-        }
-
-        public void setupCategories(List<Category> categories) {
-            llCategories.removeAllViews();
-
-            for (Category cat : categories) {
-                MaterialButton btn = new MaterialButton(itemView.getContext(), null,
-                        com.google.android.material.R.attr.materialButtonOutlinedStyle);
-                btn.setText(cat.getStrCategory());
-                btn.setTextColor(Color.BLACK);
-                btn.setBackgroundColor(Color.WHITE);
-                btn.setCornerRadius(20);
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(8, 0, 8, 0);
-                btn.setLayoutParams(params);
-
-                btn.setOnClickListener(v -> {
-                     if (selectedButton != null) {
-                        selectedButton.setBackgroundColor(Color.WHITE);
-                        selectedButton.setTextColor(Color.BLACK);
-                    }
-                     btn.setBackgroundColor(Color.parseColor("#F58D2D"));
-                    btn.setTextColor(Color.WHITE);
-                    selectedButton = btn;
-
-
-                });
-
-                llCategories.addView(btn);
-            }
-        }
-    }
-
 
     public void setRandomMeal(Recipe recipe) {
         this.randomMeal = recipe;
-        notifyItemChanged(0);
+        populateBanner();
     }
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
-        notifyItemChanged(0);
+        populateBanner();
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+        populateRecipes();
+    }
+
+    private void populateBanner() {
+        bannerContainer.removeAllViews();
+        if (randomMeal == null) return;
+
+        View banner = LayoutInflater.from(context).inflate(R.layout.item_banner, bannerContainer, false);
+        TextView tvTitle = banner.findViewById(R.id.tvBannerTitle);
+        TextView tvCategory = banner.findViewById(R.id.tvBannerCategory);
+        ImageView ivBanner = banner.findViewById(R.id.ivBannerImage);
+        LinearLayout llCategories = banner.findViewById(R.id.llCategories);
+
+        tvTitle.setText(randomMeal.getTitle());
+        tvCategory.setText(randomMeal.getCategory());
+
+        Glide.with(context).load(randomMeal.getImageUrl())
+                .placeholder(R.drawable.ic_placeholder)
+                .centerCrop()
+                .into(ivBanner);
+
+        // populate horizontal categories
+        llCategories.removeAllViews();
+        for (int i = 0; i < categories.size(); i++) {
+            Category cat = categories.get(i);
+            int index = i;
+
+            MaterialButton btn = new MaterialButton(context, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+            btn.setText(cat.getStrCategory());
+            btn.setCornerRadius(20);
+
+            if (i == selectedCategoryIndex) select(btn);
+            else unselect(btn);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 0, 20, 0); // 20px space to the right
+            btn.setLayoutParams(params);
+            btn.setOnClickListener(v -> {
+                selectedCategoryIndex = index;
+                categoryListener.onCategoryClick(cat, index);
+                populateBanner();
+            });
+
+            llCategories.addView(btn);
+        }
+
+        bannerContainer.addView(banner);
+    }
+
+    private void populateRecipes() {
+        llRecipes.removeAllViews();
+
+        for (Recipe recipe : recipes) {
+            View item = LayoutInflater.from(context).inflate(R.layout.item_recipe, llRecipes, false);
+
+            TextView tvTitle = item.findViewById(R.id.tvTitle);
+            TextView tvPrice = item.findViewById(R.id.tvPrice);
+            TextView tvRating = item.findViewById(R.id.tvRating);
+            ImageView ivRecipe = item.findViewById(R.id.ivRecipe);
+
+            tvTitle.setText(recipe.getTitle());
+            tvPrice.setText(recipe.getPrice());
+            tvRating.setText(recipe.getRating());
+
+            Glide.with(context).load(recipe.getImageUrl())
+                    .placeholder(R.drawable.ic_placeholder)
+                    .centerCrop()
+                    .into(ivRecipe);
+
+            item.setOnClickListener(v -> recipeListener.onRecipeClick(recipe));
+
+            llRecipes.addView(item);
+        }
+    }
+
+    private void select(MaterialButton btn) {
+        btn.setBackgroundColor(Color.parseColor("#F58D2D"));
+        btn.setTextColor(Color.WHITE);
+    }
+
+    private void unselect(MaterialButton btn) {
+        btn.setBackgroundColor(Color.WHITE);
+        btn.setTextColor(Color.BLACK);
     }
 }

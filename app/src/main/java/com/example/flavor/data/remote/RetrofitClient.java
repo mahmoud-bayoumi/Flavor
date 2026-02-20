@@ -8,10 +8,13 @@ public class RetrofitClient {
 
     private static Retrofit retrofit;
 
+    private static final String BASE_URL =
+            "https://www.themealdb.com/api/json/v1/1/";
+
     public static MealApiService getApi() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl("https://www.themealdb.com/api/json/v1/1/")
+                    .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
