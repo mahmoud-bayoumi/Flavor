@@ -6,17 +6,14 @@ public class Recipe implements Serializable {
 
     private String title;
     private String price;
-    private String rating;
-    private String imageUrl;
     private String category;
-
-    public Recipe(String title, String price, String rating, String imageUrl , String category) {
+    private String imageUrl;
+     public Recipe(String title, String price, String category, String imageUrl ) {
         this.title = title;
         this.price = price;
-        this.rating = rating;
-        this.imageUrl = imageUrl;
         this.category = category;
-    }
+        this.imageUrl = imageUrl;
+       }
 
     public String getTitle() {
         return title;
@@ -26,14 +23,12 @@ public class Recipe implements Serializable {
         return price;
     }
 
-    public String getRating() {
-        return rating;
+    public String getCategory() {
+        return category;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
-    public String getCategory() {
-        return category;
-    }
+
 }

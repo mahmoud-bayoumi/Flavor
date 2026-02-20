@@ -72,6 +72,32 @@ public class HomeAdapter {
         populateRecipes();
     }
 
+    public void setSearchResults(LinearLayout container, List<Recipe> recipes) {
+        container.removeAllViews();
+
+        for (Recipe recipe : recipes) {
+            View item = LayoutInflater.from(context).inflate(R.layout.item_recipe, container, false);
+
+            TextView tvTitle = item.findViewById(R.id.tvTitle);
+            TextView tvPrice = item.findViewById(R.id.tvPrice);
+            TextView tvRating = item.findViewById(R.id.tvRating);
+            ImageView ivRecipe = item.findViewById(R.id.ivRecipe);
+
+            tvTitle.setText(recipe.getTitle());
+            tvPrice.setText(recipe.getPrice());
+            tvRating.setText(recipe.getCategory());
+
+            Glide.with(context).load(recipe.getImageUrl())
+                    .placeholder(R.drawable.ic_placeholder)
+                    .centerCrop()
+                    .into(ivRecipe);
+
+            item.setOnClickListener(v -> recipeListener.onRecipeClick(recipe));
+
+            container.addView(item);
+        }
+    }
+
     private void populateBanner() {
         bannerContainer.removeAllViews();
         if (randomMeal == null) return;
@@ -90,8 +116,9 @@ public class HomeAdapter {
                 .centerCrop()
                 .into(ivBanner);
 
-        // populate horizontal categories
+        // Horizontal category buttons
         llCategories.removeAllViews();
+        if (categories == null) return;
         for (int i = 0; i < categories.size(); i++) {
             Category cat = categories.get(i);
             int index = i;
@@ -107,8 +134,9 @@ public class HomeAdapter {
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 0, 20, 0); // 20px space to the right
+            params.setMargins(0, 0, 20, 0); // Horizontal spacing
             btn.setLayoutParams(params);
+
             btn.setOnClickListener(v -> {
                 selectedCategoryIndex = index;
                 categoryListener.onCategoryClick(cat, index);
@@ -124,6 +152,8 @@ public class HomeAdapter {
     private void populateRecipes() {
         llRecipes.removeAllViews();
 
+        if (recipes == null) return;
+
         for (Recipe recipe : recipes) {
             View item = LayoutInflater.from(context).inflate(R.layout.item_recipe, llRecipes, false);
 
@@ -134,7 +164,7 @@ public class HomeAdapter {
 
             tvTitle.setText(recipe.getTitle());
             tvPrice.setText(recipe.getPrice());
-            tvRating.setText(recipe.getRating());
+            tvRating.setText(recipe.getCategory());
 
             Glide.with(context).load(recipe.getImageUrl())
                     .placeholder(R.drawable.ic_placeholder)

@@ -1,9 +1,12 @@
 package com.example.flavor.presentation.main.home;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -15,6 +18,8 @@ import com.example.flavor.R;
 import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
 import com.example.flavor.data.repo.CategoryRepository;
+import com.example.flavor.data.repo.MealRepository;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 
@@ -28,6 +33,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private LinearLayout bannerContainer;
     private LinearLayout llRecipes;
+    private LinearLayout searchResultsContainer;
+    private EditText searchEditText;
+
+    private MealRepository mealRepository;
 
     @Nullable
     @Override
@@ -40,7 +49,18 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         bannerContainer = view.findViewById(R.id.bannerContainer);
         llRecipes = view.findViewById(R.id.llRecipes);
 
+        // Container for search results
+        searchResultsContainer = new LinearLayout(getContext());
+        searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
+        ((LinearLayout) view.findViewById(R.id.bannerContainer).getParent())
+                .addView(searchResultsContainer);
+        searchResultsContainer.setVisibility(View.GONE);
+
+        TextInputLayout searchLayout = view.findViewById(R.id.searchLayout);
+        searchEditText = searchLayout.getEditText();
+
         presenter = new HomePresenter(this);
+        mealRepository = new MealRepository();
 
         adapter = new HomeAdapter(
                 getContext(),
@@ -55,7 +75,41 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         presenter.loadRandomMeal();
         loadCategories();
 
+        setupSearch();
+
         return view;
+    }
+
+    private void setupSearch() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+
+                if (!query.isEmpty()) {
+                    bannerContainer.setVisibility(View.GONE);
+                    llRecipes.setVisibility(View.GONE);
+                    searchResultsContainer.setVisibility(View.VISIBLE);
+
+                    mealRepository.searchMealsByName(query)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    recipes -> adapter.setSearchResults(searchResultsContainer, recipes),
+                                    throwable -> Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show()
+                            );
+                } else {
+                    // Restore home page
+                    bannerContainer.setVisibility(View.VISIBLE);
+                    llRecipes.setVisibility(View.VISIBLE);
+                    searchResultsContainer.setVisibility(View.GONE);
+                }
+            }
+
+            @Override public void afterTextChanged(Editable s) { }
+        });
     }
 
     @Override
@@ -82,8 +136,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 );
     }
 
-    @Override public void showLoading() {}
-    @Override public void hideLoading() {}
+    @Override public void showLoading() { }
+
+    @Override public void hideLoading() { }
 
     @Override
     public void navigateToDetails(Recipe recipe) {

@@ -14,4 +14,7 @@ public interface MealApiService {
 
     @GET("filter.php")
     Single<MealResponse> getMealsByCategory(@Query("c") String category);
+    // Search by name
+    @GET("search.php")
+    Single<MealResponse> searchMealsByName(@Query("s") String mealName);
 }

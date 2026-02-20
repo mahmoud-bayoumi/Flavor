@@ -68,19 +68,21 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:hint="Search recipes, ingredients..."
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Banner Section -->
+
+        <!-- Recipes Section -->
         <LinearLayout
             android:id="@+id/bannerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="24dp"/>
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" />
 
-        <!-- Recipes Section -->
         <LinearLayout
             android:id="@+id/llRecipes"
             android:layout_width="match_parent"

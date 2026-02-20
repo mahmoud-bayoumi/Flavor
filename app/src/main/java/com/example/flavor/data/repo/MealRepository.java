@@ -23,8 +23,7 @@ public class MealRepository {
                             meal.strMeal,
                             "Free",
                             meal.strCategory,
-                            meal.strMealThumb,
-                            meal.strCategory
+                            meal.strMealThumb
                     );
                 });
     }
@@ -38,12 +37,30 @@ public class MealRepository {
                         recipes.add(new Recipe(
                                 meal.strMeal,
                                 "Free",
-                                category,
-                                meal.strMealThumb,
-                                category
+                                 category,
+                                meal.strMealThumb
                         ));
                     }
 
+                    return recipes;
+                });
+    }
+
+    public Single<List<Recipe>> searchMealsByName(String name) {
+        return RetrofitClient.getApi()
+                .searchMealsByName(name)
+                .map(response -> {
+                    List<Recipe> recipes = new ArrayList<>();
+                    if (response.meals != null) {
+                        for (Meal meal : response.meals) {
+                            recipes.add(new Recipe(
+                                    meal.strMeal,
+                                    "Free",
+                                    meal.strCategory,
+                                    meal.strMealThumb
+                            ));
+                        }
+                    }
                     return recipes;
                 });
     }

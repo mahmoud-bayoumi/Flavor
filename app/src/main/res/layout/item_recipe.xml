@@ -23,8 +23,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/ivRecipe"
             android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/ivRecipe"
             android:orientation="vertical">
 
             <TextView
@@ -32,17 +32,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fresh Salmon Poke Bowl"
-                android:textStyle="bold"
                 android:textColor="#1A237E"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="★ 4.8 (1.2k reviews)"
-                android:textSize="12sp"
-                android:textColor="#757575"/>
+                android:textColor="#757575"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvPrice"
@@ -50,8 +50,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="$12.50"
-                android:textStyle="bold"
-                android:textColor="#F58D2D" />
+                android:textColor="#F58D2D"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
@@ -69,8 +69,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
-                android:src="@android:drawable/ic_input_add"
                 android:padding="8dp"
+                android:src="@android:drawable/ic_input_add"
                 app:tint="#F58D2D" />
 
         </com.google.android.material.card.MaterialCardView>

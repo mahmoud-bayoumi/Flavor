@@ -39,7 +39,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         Recipe recipe = recipes.get(position);
         holder.title.setText(recipe.getTitle());
         holder.time.setText(recipe.getPrice()); // Using price field for time
-        holder.kcal.setText(recipe.getRating()); // Using rating field for kcal
+       // holder.kcal.setText(recipe.getRating()); // Using rating field for kcal
       //  holder.image.setImageResource(recipe.getImageResId());
 
         holder.deleteBtn.setOnClickListener(v -> listener.onDeleteClick(position));
