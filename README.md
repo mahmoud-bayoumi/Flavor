@@ -48,7 +48,7 @@
 
 1. **Clone the repo**
    ```bash
-   git clone (https://github.com/mahmoud-bayoumi/Flavor.git)
+   git clone https://github.com/mahmoud-bayoumi/Flavor.git
    cd Flavor
    ```
 
