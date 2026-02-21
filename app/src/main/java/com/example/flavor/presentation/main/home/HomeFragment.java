@@ -1,5 +1,6 @@
 package com.example.flavor.presentation.main.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,13 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.flavor.R;
+import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
 import com.example.flavor.data.repo.CategoryRepository;
@@ -39,6 +44,18 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private EditText searchEditText;
 
     private MealRepository mealRepository;
+    private Recipe randomMeal;
+
+
+    private final ActivityResultLauncher<Intent> mealDetailsLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                    boolean isFavorite = result.getData().getBooleanExtra("IS_FAVORITE", false);
+                    String mealId = result.getData().getStringExtra("MEAL_ID");
+
+                    adapter.refreshRecipeFavorite(mealId, isFavorite);
+                }
+            });
 
     @Nullable
     @Override
@@ -51,7 +68,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         bannerContainer = view.findViewById(R.id.bannerContainer);
         llRecipes = view.findViewById(R.id.llRecipes);
 
-        // Container for search results
+        // Search results container
         searchResultsContainer = new LinearLayout(getContext());
         searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         ((LinearLayout) view.findViewById(R.id.bannerContainer).getParent())
@@ -74,9 +91,11 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 (category, position) -> presenter.loadMealsByCategory(category.getStrCategory())
         );
 
+        // Set meals list click listener
+        adapter.setRecipeItemClickListener(recipe -> navigateToDetails(recipe));
+
         presenter.loadRandomMeal();
         loadCategories();
-
         setupSearch();
 
         return view;
@@ -89,7 +108,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
-
                 if (!query.isEmpty()) {
                     bannerContainer.setVisibility(View.GONE);
                     llRecipes.setVisibility(View.GONE);
@@ -103,7 +121,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                                     throwable -> Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show()
                             );
                 } else {
-                    // Restore home page
                     bannerContainer.setVisibility(View.VISIBLE);
                     llRecipes.setVisibility(View.VISIBLE);
                     searchResultsContainer.setVisibility(View.GONE);
@@ -121,7 +138,14 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @Override
     public void showRandomMeal(Recipe recipe) {
+        randomMeal = recipe;
         adapter.setRandomMeal(recipe);
+
+        adapter.setRandomMealClickListener(v -> {
+            Intent intent = new Intent(getContext(), MealDetailsActivity.class);
+            intent.putExtra("MEAL_ID", randomMeal.getId());
+            mealDetailsLauncher.launch(intent);
+        });
     }
 
     private void loadCategories() {
@@ -139,14 +163,12 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     @Override public void showLoading() { }
-
     @Override public void hideLoading() { }
 
     @Override
     public void navigateToDetails(Recipe recipe) {
-        startActivity(
-                new Intent(getActivity(), MealDetailsActivity.class)
-                        .putExtra("MEAL_ID", recipe.getId())
-        );
+        Intent intent = new Intent(getActivity(), MealDetailsActivity.class);
+        intent.putExtra("MEAL_ID", recipe.getId());
+        mealDetailsLauncher.launch(intent);
     }
 }

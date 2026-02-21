@@ -64,4 +64,9 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-rxjava2:2.6.1")
+
 }

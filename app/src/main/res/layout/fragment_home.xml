@@ -8,6 +8,7 @@
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/homeRootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -37,16 +38,17 @@
 
         <!-- Greetings -->
         <TextView
+            android:id="@+id/tvUserGreetings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Good morning, Alex"
+            android:text="@string/welcome_dear"
             android:textColor="#757575" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ready to cook?"
+            android:text="@string/ready_to_cook"
             android:textColor="#1A237E"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -69,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:hint="Search recipes, ingredients..."
+                android:hint="@string/search_hint_text"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 

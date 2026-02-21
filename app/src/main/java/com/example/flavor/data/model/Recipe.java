@@ -10,6 +10,8 @@ public class Recipe implements Serializable {
     private String imageUrl;
     private String youtubeUrl;
     private String instructions;
+    private boolean isFavorite = false;
+
 
     public Recipe(String id, String title, String category,
                   String imageUrl, String youtubeUrl, String instructions) {
@@ -29,4 +31,8 @@ public class Recipe implements Serializable {
     public String getInstructions() { return instructions; }
 
     public String getPrice(){ return "Free"; }
+
+    public boolean isFavorite() { return isFavorite; }
+    public void setFavorite(boolean favorite) { isFavorite = favorite; }
+
 }

@@ -70,6 +70,7 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
                 android:padding="8dp"
+                android:scaleType="fitXY"
                 android:src="@android:drawable/ic_input_add"
                 app:tint="#F58D2D" />
 

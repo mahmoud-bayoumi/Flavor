@@ -61,16 +61,17 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="16dp"
-                app:cardBackgroundColor="#F58D2D"
+                app:cardBackgroundColor="#FFF3E0"
                 app:cardCornerRadius="10dp">
 
                 <ImageButton
-                    android:id="@+id/btnAddMealOfDay"
+                    android:id="@+id/btnFavoriteBanner"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackground"
-                    android:src="@android:drawable/ic_input_add"
-                    app:tint="@android:color/white"
+                    android:src="@drawable/ic_outlined_heart"
+                    android:scaleType="fitXY"
+                    app:tint="#F58D2D"
                     android:padding="8dp"/>
             </com.google.android.material.card.MaterialCardView>
 
