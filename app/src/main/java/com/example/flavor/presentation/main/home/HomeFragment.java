@@ -1,5 +1,6 @@
 package com.example.flavor.presentation.main.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +20,7 @@ import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
 import com.example.flavor.data.repo.CategoryRepository;
 import com.example.flavor.data.repo.MealRepository;
+import com.example.flavor.presentation.mealdetails.MealDetailsActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -143,9 +145,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void navigateToDetails(Recipe recipe) {
         startActivity(
-                new android.content.Intent(getActivity(),
-                        com.example.flavor.presentation.mealdetails.MealDetailsActivity.class)
-                        .putExtra("RECIPE_EXTRA", recipe)
+                new Intent(getActivity(), MealDetailsActivity.class)
+                        .putExtra("MEAL_ID", recipe.getId())
         );
     }
 }

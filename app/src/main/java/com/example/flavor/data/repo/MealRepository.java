@@ -1,5 +1,7 @@
 package com.example.flavor.data.repo;
 
+import android.util.Log;
+
 import com.example.flavor.data.model.Meal;
 import com.example.flavor.data.model.Recipe;
 import com.example.flavor.data.remote.RetrofitClient;
@@ -20,11 +22,13 @@ public class MealRepository {
                     Meal meal = response.meals.get(0);
 
                     return new Recipe(
+                            meal.idMeal,
                             meal.strMeal,
-                            "Free",
-                            meal.strCategory,
-                            meal.strMealThumb
-                    );
+                            meal.strCategory ,
+                            meal.strMealThumb,
+                            meal.strYoutube ,
+                            meal.strInstructions
+                        );
                 });
     }
     public Single<List<Recipe>> getMealsByCategory(String category) {
@@ -35,10 +39,12 @@ public class MealRepository {
 
                     for (Meal meal : response.meals) {
                         recipes.add(new Recipe(
+                                meal.idMeal,
                                 meal.strMeal,
-                                "Free",
-                                 category,
-                                meal.strMealThumb
+                                meal.strCategory ,
+                                meal.strMealThumb,
+                                meal.strYoutube ,
+                                meal.strInstructions
                         ));
                     }
 
@@ -52,16 +58,24 @@ public class MealRepository {
                 .map(response -> {
                     List<Recipe> recipes = new ArrayList<>();
                     if (response.meals != null) {
-                        for (Meal meal : response.meals) {
-                            recipes.add(new Recipe(
+                         for (Meal meal : response.meals) {
+                             recipes.add(new Recipe(
+                                     meal.idMeal,
                                     meal.strMeal,
-                                    "Free",
-                                    meal.strCategory,
-                                    meal.strMealThumb
+                                    meal.strCategory ,
+                                    meal.strMealThumb,
+                                    meal.strYoutube ,
+                                    meal.strInstructions
                             ));
                         }
                     }
                     return recipes;
                 });
+    }
+
+    public Single<Meal> getMealDetails(String mealId) {
+        return RetrofitClient.getApi()
+                .getMealDetails(mealId)
+                .map(response -> response.meals.get(0));
     }
 }

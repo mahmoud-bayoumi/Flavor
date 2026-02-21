@@ -1,6 +1,7 @@
 package com.example.flavor.presentation.main.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.example.flavor.R;
 import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
+import com.example.flavor.presentation.mealdetails.MealDetailsActivity;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -115,6 +117,11 @@ public class HomeAdapter {
                 .placeholder(R.drawable.ic_placeholder)
                 .centerCrop()
                 .into(ivBanner);
+        banner.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), MealDetailsActivity.class);
+            intent.putExtra("MEAL_ID", randomMeal.getId());
+            v.getContext().startActivity(intent);
+        });
 
         // Horizontal category buttons
         llCategories.removeAllViews();
