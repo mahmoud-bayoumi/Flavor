@@ -49,7 +49,7 @@
         android:id="@+id/subTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="YOUR PERSONAL KITCHEN GUIDE"
+        android:text="@string/app_slogan"
         android:textSize="12sp"
         android:textColor="#F7931E"
         android:letterSpacing="0.15"

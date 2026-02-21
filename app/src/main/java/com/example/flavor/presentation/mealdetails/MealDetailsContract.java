@@ -8,7 +8,7 @@ import java.util.List;
 public interface MealDetailsContract {
     interface View {
         void showMealDetails(Recipe recipe);
-        void showIngredients(List<Ingredient> ingredients);
+   //     void showIngredients(List<Ingredient> ingredients);
         void showSteps(List<String> steps);
         void onAddedToPlanner();
     }

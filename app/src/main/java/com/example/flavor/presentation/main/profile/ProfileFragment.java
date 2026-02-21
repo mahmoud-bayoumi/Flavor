@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class ProfileFragment extends Fragment {
 
     private ImageView ivProfilePicture;
-    private TextView tvProfileName; // Removed tvProfileEmail to match XML
     private Button btnLogout;
 
     public ProfileFragment() {
@@ -40,21 +39,13 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize Views
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
-        tvProfileName = view.findViewById(R.id.tvProfileName);
         btnLogout = view.findViewById(R.id.btnLogout);
-
-        // 2. Set User Data
-        loadUserData();
-
-        // 3. Setup Logout Logic
         btnLogout.setOnClickListener(v -> handleLogout());
     }
 
     private void loadUserData() {
-        // Set the name; email is no longer handled here as per your XML update
-        tvProfileName.setText("John Doe");
+
     }
 
     private void handleLogout() {

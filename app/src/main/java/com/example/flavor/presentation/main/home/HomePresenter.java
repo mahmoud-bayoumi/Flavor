@@ -1,36 +1,59 @@
 package com.example.flavor.presentation.main.home;
 
-import com.example.flavor.R;
 import com.example.flavor.data.model.Recipe;
-import java.util.ArrayList;
+import com.example.flavor.data.repo.MealRepository;
+
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class HomePresenter implements HomeContract.Presenter {
-    private HomeContract.View view;
+    private final HomeContract.View view;
+    private final MealRepository repository;
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     public HomePresenter(HomeContract.View view) {
         this.view = view;
+        repository = new MealRepository();
     }
 
     @Override
-    public void loadRecipes() {
-        if (view != null) {
-            view.showLoading();
+    public void loadRandomMeal() {
+        view.showLoading();
+        disposable.add(
+                repository.getRandomMeal()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(recipe -> {
+                            view.hideLoading();
+                            view.showRandomMeal(recipe);
+                        }, throwable -> view.hideLoading())
+        );
+    }
 
-            List<Recipe> list = new ArrayList<>();
-            list.add(new Recipe("Fresh Salmon Poke Bowl", "$12.50", "4.8 (1.2k reviews)", R.drawable.ic_launcher_background));
-            list.add(new Recipe("Classic Margherita Pizza", "$14.00", "4.9 (850 reviews)", R.drawable.ic_launcher_background));
-            list.add(new Recipe("Green Detox Bowl", "$10.00", "4.7 (2.1k reviews)", R.drawable.ic_launcher_background));
-
-            view.showRecipes(list);
-            view.hideLoading();
-        }
+    @Override
+    public void loadMealsByCategory(String category) {
+        view.showLoading();
+        disposable.add(
+                repository.getMealsByCategory(category)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(recipes -> {
+                            view.hideLoading();
+                            view.showRecipes(recipes);
+                        }, throwable -> view.hideLoading())
+        );
     }
 
     @Override
     public void onRecipeClicked(Recipe recipe) {
-        if (view != null) {
-            view.navigateToDetails(recipe);
-        }
+        view.navigateToDetails(recipe);
+    }
+
+    @Override
+    public void clear() {
+        disposable.clear();
     }
 }

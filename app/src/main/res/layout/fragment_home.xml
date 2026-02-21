@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,11 +8,13 @@
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/homeRootLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -33,21 +36,24 @@
                 app:shapeAppearanceOverlay="@style/CircleImage" />
         </RelativeLayout>
 
+        <!-- Greetings -->
         <TextView
+            android:id="@+id/tvUserGreetings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Good morning, Alex"
+            android:text="@string/welcome_dear"
             android:textColor="#757575" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ready to cook?"
+            android:text="@string/ready_to_cook"
             android:textColor="#1A237E"
             android:textSize="24sp"
             android:textStyle="bold" />
 
+        <!-- Search -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/searchLayout"
             android:layout_width="match_parent"
@@ -64,25 +70,26 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Search recipes, ingredients..."
+                android:layout_marginBottom="8dp"
+                android:hint="@string/search_hint_text"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Suggested for You"
-            android:textColor="#1A237E"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+        <!-- Banner Section -->
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <!-- Recipes Section -->
+        <LinearLayout
+            android:id="@+id/bannerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:nestedScrollingEnabled="false" />
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" />
 
+        <LinearLayout
+            android:id="@+id/llRecipes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"/>
     </LinearLayout>
 </ScrollView>

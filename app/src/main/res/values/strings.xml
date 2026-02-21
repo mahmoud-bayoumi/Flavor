@@ -11,6 +11,18 @@
     <string name="app_title">Flavor</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_web_client_id">
-       52137478363-3ikvg88vmjl1a5dsebf7beq9unh4tk4v.apps.googleusercontent.com
+        52137478363-3ikvg88vmjl1a5dsebf7beq9unh4tk4v.apps.googleusercontent.com
     </string>
+    <string name="step_description">Season the beef fillet with salt and pepper then sear on all sides until browned.</string>
+    <string name="steps_number">1</string>
+    <string name="ready_to_cook">Ready to cook?</string>
+    <string name="welcome_dear">Welcome, Dear</string>
+    <string name="search_hint_text">Search recipes, ingredients...</string>
+    <string name="create_account">Create Account</string>
+    <string name="full_name">Full Name</string>
+    <string name="name_hint_text">John Doe</string>
+    <string name="sign_up_create_account">Create Account →</string>
+    <string name="already_have_an_account_log_in">Already have an account? Log In</string>
+    <string name="app_slogan">YOUR PERSONAL KITCHEN GUIDE</string>
+    <string name="favorites_title">My Favorites</string>
 </resources>

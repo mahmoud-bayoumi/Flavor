@@ -6,7 +6,8 @@ import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.data.repo.AuthRepository;
 import com.google.firebase.auth.FirebaseUser;
 
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.disposables.CompositeDisposable;
+
 
 public class LoginPresenter implements LoginContract.Presenter {
 

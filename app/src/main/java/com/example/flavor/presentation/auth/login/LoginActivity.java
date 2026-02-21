@@ -31,6 +31,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     private LoginPresenter presenter;
     private EditText etEmail, etPassword;
