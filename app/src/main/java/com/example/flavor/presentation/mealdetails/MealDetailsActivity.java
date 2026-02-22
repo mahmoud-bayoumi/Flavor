@@ -36,7 +36,6 @@ public class MealDetailsActivity extends AppCompatActivity
     private ImageView ivMealImageHeader;
     private FloatingActionButton fabFavorite;
 
-    private FavoriteRepository favoriteRepository;
     private Recipe currentRecipe;
 
     @Override
@@ -44,30 +43,35 @@ public class MealDetailsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_details);
 
+        initViews();
+
+        rvSteps.setLayoutManager(new LinearLayoutManager(this));
+        getLifecycle().addObserver(youtubePlayerView);
+
+        presenter = new MealDetailsPresenter(this, this);
+
+        String mealId = getIntent().getStringExtra("MEAL_ID");
+        if (mealId == null) {
+            Toast.makeText(this, "Meal not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        presenter.loadMealDetails(mealId);
+
+        fabFavorite.setOnClickListener(v -> {
+            if (currentRecipe != null) {
+                presenter.toggleFavorite(currentRecipe);
+            }
+        });
+    }
+
+    private void initViews() {
         tvMealTitle = findViewById(R.id.tvMealTitle);
         rvSteps = findViewById(R.id.rvSteps);
         youtubePlayerView = findViewById(R.id.youtube_player_view);
         ivMealImageHeader = findViewById(R.id.ivMealHeader);
         fabFavorite = findViewById(R.id.fabFavorite);
-
-        favoriteRepository = new FavoriteRepository(this);
-
-        rvSteps.setLayoutManager(new LinearLayoutManager(this));
-        getLifecycle().addObserver(youtubePlayerView);
-
-        presenter = new MealDetailsPresenter(this);
-
-        String mealId = getIntent().getStringExtra("MEAL_ID");
-        if (mealId != null) {
-            presenter.loadMealDetails(mealId);
-        } else {
-            Toast.makeText(this, "Meal not found", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        fabFavorite.setOnClickListener(v -> {
-            if (currentRecipe != null) toggleFavorite(currentRecipe);
-        });
     }
 
     @Override
@@ -83,8 +87,7 @@ public class MealDetailsActivity extends AppCompatActivity
                 .into(ivMealImageHeader);
 
         loadYoutube(recipe.getYoutubeUrl());
-
-        updateFavoriteIcon(recipe);
+        updateFavoriteIcon(recipe.isFavorite());
     }
 
     private void loadYoutube(String youtubeUrl) {
@@ -108,48 +111,23 @@ public class MealDetailsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onAddedToPlanner() {
-        Toast.makeText(this, "Added to planner", Toast.LENGTH_SHORT).show();
+    public void updateFavoriteIcon(boolean isFavorite) {
+        fabFavorite.setImageResource(
+                isFavorite ? R.drawable.ic_filled_heart : R.drawable.ic_outlined_heart
+        );
     }
 
-    /** ------------------ Favorite Logic ------------------ **/
-
-    private void updateFavoriteIcon(Recipe recipe) {
-        favoriteRepository.isFavorite(recipe.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isFav -> {
-                    recipe.setFavorite(isFav);
-                    if (isFav) fabFavorite.setImageResource(R.drawable.ic_filled_heart);
-                    else fabFavorite.setImageResource(R.drawable.ic_outlined_heart);
-                });
-    }
-
-    private void toggleFavorite(Recipe recipe) {
-        favoriteRepository.isFavorite(recipe.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(isFav -> {
-                    if (isFav) {
-                        fabFavorite.setImageResource(R.drawable.ic_outlined_heart);
-                        favoriteRepository.removeFromFavorites(recipe)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(() -> returnFavoriteState(recipe.getId(), false));
-                    } else {
-                        fabFavorite.setImageResource(R.drawable.ic_filled_heart);
-                        favoriteRepository.addToFavorites(recipe)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(() -> returnFavoriteState(recipe.getId(), true));
-                    }
-                });
-    }
-
-    private void returnFavoriteState(String mealId, boolean isFavorite) {
+    @Override
+    public void onFavoriteUpdated(String mealId, boolean isFavorite) {
         Intent data = new Intent();
         data.putExtra("MEAL_ID", mealId);
         data.putExtra("IS_FAVORITE", isFavorite);
         setResult(RESULT_OK, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.detach();
+        super.onDestroy();
     }
 }

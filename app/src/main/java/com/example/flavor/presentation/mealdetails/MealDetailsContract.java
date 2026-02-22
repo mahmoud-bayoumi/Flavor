@@ -6,16 +6,17 @@ import com.example.flavor.data.model.Recipe;
 import java.util.List;
 
 public interface MealDetailsContract {
+
     interface View {
         void showMealDetails(Recipe recipe);
-   //     void showIngredients(List<Ingredient> ingredients);
         void showSteps(List<String> steps);
-        void onAddedToPlanner();
+        void updateFavoriteIcon(boolean isFavorite);
+        void onFavoriteUpdated(String mealId, boolean isFavorite);
     }
 
     interface Presenter {
         void loadMealDetails(String recipeId);
-        void addToPlanner(String recipeId);
-        void toggleFavorite(String recipeId);
+        void toggleFavorite(Recipe recipe);
+        void detach();
     }
 }

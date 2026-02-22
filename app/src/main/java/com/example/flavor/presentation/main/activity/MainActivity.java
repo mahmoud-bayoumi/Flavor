@@ -18,12 +18,11 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
 
-        // 1. Load the HomeFragment by default
+
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            loadFragment(new HomeFragment()); // Load the HomeFragment by default
         }
 
-        // 2. Handle Bottom Navigation Clicks
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();

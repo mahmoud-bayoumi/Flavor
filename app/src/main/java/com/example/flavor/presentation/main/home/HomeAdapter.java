@@ -28,8 +28,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class HomeAdapter {
 
-    public interface OnRecipeClickListener { void onRecipeClick(Recipe recipe); }
-    public interface OnCategoryClickListener { void onCategoryClick(Category category, int position); }
 
     private Recipe randomMeal;
     private List<Category> categories;
@@ -46,7 +44,6 @@ public class HomeAdapter {
 
     private final FavoriteRepository favoriteRepository;
 
-    // Custom click listeners
     private View.OnClickListener randomMealClickListener;
     private OnRecipeClickListener recipeItemClickListener;
 
@@ -72,7 +69,6 @@ public class HomeAdapter {
         this.favoriteRepository = new FavoriteRepository(context);
     }
 
-    /** ---------------- Setters ---------------- **/
     public void setRandomMeal(Recipe recipe) {
         this.randomMeal = recipe;
         populateBanner();
@@ -118,7 +114,7 @@ public class HomeAdapter {
         }
     }
 
-    /** ---------------- Random Meal Banner ---------------- **/
+    // Random Meal Banner
     private void populateBanner() {
         bannerContainer.removeAllViews();
         if (randomMeal == null) return;
@@ -141,7 +137,6 @@ public class HomeAdapter {
         updateFavoriteIcon(randomMeal, btnFavoriteBanner);
         btnFavoriteBanner.setOnClickListener(v -> toggleFavorite(randomMeal, btnFavoriteBanner));
 
-        // Banner click
         if (randomMealClickListener != null) {
             banner.setOnClickListener(randomMealClickListener);
         } else {
@@ -187,7 +182,7 @@ public class HomeAdapter {
         bannerContainer.addView(banner);
     }
 
-    /** ---------------- Recipes List ---------------- **/
+    // Recipes List
     private void populateRecipes() {
         llRecipes.removeAllViews();
         recipeItemViews.clear();
@@ -226,7 +221,7 @@ public class HomeAdapter {
         }
     }
 
-    /** ---------------- Refresh single recipe favorite ---------------- **/
+
     public void refreshRecipeFavorite(String recipeId, boolean isFavorite) {
         // Update banner if matches
         if (randomMeal != null && randomMeal.getId().equals(recipeId)) {
@@ -252,7 +247,6 @@ public class HomeAdapter {
         }
     }
 
-    /** ---------------- Category Button Styles ---------------- **/
     private void select(MaterialButton btn) {
         btn.setBackgroundColor(Color.parseColor("#F58D2D"));
         btn.setTextColor(Color.WHITE);
@@ -263,7 +257,6 @@ public class HomeAdapter {
         btn.setTextColor(Color.BLACK);
     }
 
-    /** ---------------- Favorite Logic ---------------- **/
     private void updateFavoriteIcon(Recipe recipe, ImageButton btnFavorite) {
         favoriteRepository.isFavorite(recipe.getId())
                 .subscribeOn(Schedulers.io())
@@ -294,7 +287,6 @@ public class HomeAdapter {
                 });
     }
 
-    /** ---------------- Click Listener Setters ---------------- **/
     public void setRandomMealClickListener(View.OnClickListener listener) {
         this.randomMealClickListener = listener;
         populateBanner();
@@ -305,6 +297,5 @@ public class HomeAdapter {
         populateRecipes();
     }
 
-    /** ---------------- Getter for recipes ---------------- **/
     public List<Recipe> getRecipes() { return recipes; }
 }

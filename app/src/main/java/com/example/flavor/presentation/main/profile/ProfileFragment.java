@@ -26,7 +26,6 @@ public class ProfileFragment extends Fragment {
     private Button btnLogout;
 
     public ProfileFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -44,9 +43,7 @@ public class ProfileFragment extends Fragment {
         btnLogout.setOnClickListener(v -> handleLogout());
     }
 
-    private void loadUserData() {
 
-    }
 
     private void handleLogout() {
         AuthRepository.getInstance(requireContext())

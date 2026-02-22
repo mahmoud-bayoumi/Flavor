@@ -35,7 +35,7 @@ import com.google.android.gms.tasks.Task;
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     private LoginPresenter presenter;
     private EditText etEmail, etPassword;
-    private AppCompatButton btnLogin; // Use AppCompatButton for custom backgrounds
+    private AppCompatButton btnLogin;
     private TextView tvGoToSignUp;
     private GoogleSignInClient googleSignInClient;
     private static final int RC_GOOGLE_SIGN_IN = 1001;

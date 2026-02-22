@@ -26,7 +26,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
 
     public interface OnItemClickListener {
         void onDeleteClick(FavoriteRecipe recipe, int position);
-        void onItemClick(FavoriteRecipe recipe); // Trigger navigation to MealDetailsActivity
+        void onItemClick(FavoriteRecipe recipe);
     }
 
     public FavoritesAdapter(Context context, OnItemClickListener listener) {
