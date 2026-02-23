@@ -1,6 +1,6 @@
 # Flavor
 
-**Your personal kitchen companion.** Flavor is an Android app that helps you discover recipes, browse meal details with ingredients and steps, save favorites, and sign in with email or Google.
+**YOUR PERSONAL KITCHEN GUIDE** Flavor is an Android app that helps you discover recipes, browse meal details with ingredients and steps, save favorites, and sign in with email or Google.
 
 ---
 
@@ -48,7 +48,7 @@
 
 1. **Clone the repo**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/mahmoud-bayoumi/Flavor.git
    cd Flavor
    ```
 
