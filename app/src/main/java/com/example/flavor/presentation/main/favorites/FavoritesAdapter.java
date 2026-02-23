@@ -34,14 +34,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         this.listener = listener;
     }
 
-    // Replace the current list of recipes
     public void setItems(List<FavoriteRecipe> newRecipes) {
         recipes.clear();
         recipes.addAll(newRecipes);
         notifyDataSetChanged();
     }
 
-    // Remove a recipe at a specific position
     public void removeItem(int position) {
         if (position >= 0 && position < recipes.size()) {
             recipes.remove(position);
@@ -50,7 +48,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
         }
     }
 
-    // Getter for external access to recipes
+
     public List<FavoriteRecipe> getRecipes() {
         return recipes;
     }

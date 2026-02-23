@@ -1,33 +1,75 @@
 package com.example.flavor.presentation.main.favorites;
 
-import com.example.flavor.R;
-import com.example.flavor.data.model.Recipe;
+import com.example.flavor.data.local.AppDatabase;
+import com.example.flavor.data.local.entities.FavoriteRecipe;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class FavoritesPresenter implements FavoritesContract.Presenter {
-    private FavoritesContract.View view;
-    private List<Recipe> recipeList; // Local cache for the presenter
 
-    public FavoritesPresenter(FavoritesContract.View view) {
+    private FavoritesContract.View view;
+    private final AppDatabase database;
+    private final CompositeDisposable compositeDisposable;
+
+    public FavoritesPresenter(FavoritesContract.View view, AppDatabase database) {
         this.view = view;
+        this.database = database;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void loadFavorites() {
-        // Mapping your model fields: title, price (time), rating (kcal)
-        recipeList = new ArrayList<>();
-   //     recipeList.add(new Recipe("Summer Avocado & Quinoa Salad", "15m", "320 kcal", R.drawable.ic_launcher_background));
-    //    recipeList.add(new Recipe("Creamy Wild Mushroom Pasta", "25m", "540 kcal", R.drawable.ic_launcher_background));
-     //   recipeList.add(new Recipe("Berry Explosion Breakfast Bowl", "10m", "280 kcal", R.drawable.ic_launcher_background));
+        compositeDisposable.add(
+                database.favoriteRecipeDao()
+                        .getAllFavorites()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                favorites -> {
+                                    if (view == null) return;
 
-        view.showFavorites(recipeList);
+                                    if (favorites.isEmpty()) {
+                                        view.showEmptyState();
+                                    } else {
+                                        view.showFavorites(favorites);
+                                    }
+                                },
+                                throwable -> {
+                                    if (view != null) {
+                                        view.showError("Error loading favorites");
+                                    }
+                                }
+                        )
+        );
     }
 
     @Override
-    public void deleteRecipe(int position) {
-        // In a real app, delete from database here
-        recipeList.remove(position);
-        view.onRecipeDeleted(position);
+    public void deleteRecipe(FavoriteRecipe recipe, int position) {
+        compositeDisposable.add(
+                database.favoriteRecipeDao()
+                        .delete(recipe)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                () -> {
+                                    if (view != null) {
+                                        view.onRecipeDeleted(position);
+                                    }
+                                },
+                                throwable -> {
+                                    if (view != null) {
+                                        view.showError("Failed to remove favorite");
+                                    }
+                                }
+                        )
+        );
+    }
+
+    @Override
+    public void detach() {
+        compositeDisposable.clear();
+        view = null;
     }
 }
