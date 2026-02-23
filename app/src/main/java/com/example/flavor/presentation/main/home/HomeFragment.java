@@ -1,6 +1,5 @@
 package com.example.flavor.presentation.main.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,8 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.flavor.R;
-import com.example.flavor.core.storage.PrefsManager;
-import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
 import com.example.flavor.data.repo.CategoryRepository;
 import com.example.flavor.data.repo.MealRepository;
@@ -29,8 +25,10 @@ import com.example.flavor.presentation.mealdetails.MealDetailsActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
@@ -46,6 +44,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private MealRepository mealRepository;
     private Recipe randomMeal;
 
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final ActivityResultLauncher<Intent> mealDetailsLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -68,7 +67,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         bannerContainer = view.findViewById(R.id.bannerContainer);
         llRecipes = view.findViewById(R.id.llRecipes);
 
-        // Search results container
+
         searchResultsContainer = new LinearLayout(getContext());
         searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         ((LinearLayout) view.findViewById(R.id.bannerContainer).getParent())
@@ -91,7 +90,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 (category, position) -> presenter.loadMealsByCategory(category.getStrCategory())
         );
 
-        // Set meals list click listener
         adapter.setRecipeItemClickListener(recipe -> navigateToDetails(recipe));
 
         presenter.loadRandomMeal();
@@ -100,6 +98,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         return view;
     }
+
 
     private void setupSearch() {
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -113,13 +112,15 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                     llRecipes.setVisibility(View.GONE);
                     searchResultsContainer.setVisibility(View.VISIBLE);
 
-                    mealRepository.searchMealsByName(query)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    recipes -> adapter.setSearchResults(searchResultsContainer, recipes),
-                                    throwable -> Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show()
-                            );
+                    compositeDisposable.add(
+                            mealRepository.searchMealsByName(query)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            recipes -> adapter.setSearchResults(searchResultsContainer, recipes),
+                                            throwable -> Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show()
+                                    )
+                    );
                 } else {
                     bannerContainer.setVisibility(View.VISIBLE);
                     llRecipes.setVisibility(View.VISIBLE);
@@ -131,8 +132,28 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         });
     }
 
+
+    private void loadCategories() {
+        compositeDisposable.add(
+                new CategoryRepository()
+                        .getCategories()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                categories -> {
+                                    adapter.setCategories(categories);
+                                    if (!categories.isEmpty()) {
+                                        presenter.loadMealsByCategory(categories.get(0).getStrCategory());
+                                    }
+                                },
+                                e -> Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show()
+                        )
+        );
+    }
+
+
     @Override
-    public void showRecipes(java.util.List<Recipe> recipes) {
+    public void showRecipes(List<Recipe> recipes) {
         adapter.setRecipes(recipes);
     }
 
@@ -148,20 +169,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         });
     }
 
-    private void loadCategories() {
-        new CategoryRepository()
-                .getCategories()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        categories -> {
-                            adapter.setCategories(categories);
-                            presenter.loadMealsByCategory(categories.get(0).getStrCategory());
-                        },
-                        e -> Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show()
-                );
-    }
-
     @Override public void showLoading() { }
     @Override public void hideLoading() { }
 
@@ -170,5 +177,13 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         Intent intent = new Intent(getActivity(), MealDetailsActivity.class);
         intent.putExtra("MEAL_ID", recipe.getId());
         mealDetailsLauncher.launch(intent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.clear();
+        compositeDisposable.clear();
+        if (adapter != null) adapter.clear();
     }
 }

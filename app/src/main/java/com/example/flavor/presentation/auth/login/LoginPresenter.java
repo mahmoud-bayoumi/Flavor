@@ -14,7 +14,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View view;
     private final AuthRepository authRepository;
     private final PrefsManager prefsManager;
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable(); // Manage RxJava subscriptions safely
 
     public LoginPresenter(LoginContract.View view, Context context) {
         this.view = view;
