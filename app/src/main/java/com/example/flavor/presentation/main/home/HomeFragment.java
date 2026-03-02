@@ -18,18 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.flavor.R;
+import com.example.flavor.data.model.Category;
 import com.example.flavor.data.model.Recipe;
-import com.example.flavor.data.repo.CategoryRepository;
-import com.example.flavor.data.repo.MealRepository;
 import com.example.flavor.presentation.mealdetails.MealDetailsActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
 
@@ -41,20 +36,22 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private LinearLayout searchResultsContainer;
     private EditText searchEditText;
 
-    private MealRepository mealRepository;
     private Recipe randomMeal;
 
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private final ActivityResultLauncher<Intent> mealDetailsLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
-                    boolean isFavorite = result.getData().getBooleanExtra("IS_FAVORITE", false);
-                    String mealId = result.getData().getStringExtra("MEAL_ID");
-
-                    adapter.refreshRecipeFavorite(mealId, isFavorite);
-                }
-            });
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == getActivity().RESULT_OK
+                                && result.getData() != null) {
+                            boolean isFavorite = result.getData()
+                                    .getBooleanExtra("IS_FAVORITE", false);
+                            String mealId = result.getData()
+                                    .getStringExtra("MEAL_ID");
+                            adapter.refreshRecipeFavorite(mealId, isFavorite);
+                        }
+                    }
+            );
 
     @Nullable
     @Override
@@ -67,7 +64,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         bannerContainer = view.findViewById(R.id.bannerContainer);
         llRecipes = view.findViewById(R.id.llRecipes);
 
-
         searchResultsContainer = new LinearLayout(getContext());
         searchResultsContainer.setOrientation(LinearLayout.VERTICAL);
         ((LinearLayout) view.findViewById(R.id.bannerContainer).getParent())
@@ -78,7 +74,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         searchEditText = searchLayout.getEditText();
 
         presenter = new HomePresenter(this);
-        mealRepository = new MealRepository();
 
         adapter = new HomeAdapter(
                 getContext(),
@@ -87,40 +82,37 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 new ArrayList<>(),
                 new ArrayList<>(),
                 presenter::onRecipeClicked,
-                (category, position) -> presenter.loadMealsByCategory(category.getStrCategory())
+                (category, position) ->
+                        presenter.loadMealsByCategory(category.getStrCategory())
         );
 
         adapter.setRecipeItemClickListener(recipe -> navigateToDetails(recipe));
 
         presenter.loadRandomMeal();
-        loadCategories();
+        presenter.loadCategories();
+
         setupSearch();
 
         return view;
     }
 
-
     private void setupSearch() {
         searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
                 String query = s.toString().trim();
                 if (!query.isEmpty()) {
                     bannerContainer.setVisibility(View.GONE);
                     llRecipes.setVisibility(View.GONE);
                     searchResultsContainer.setVisibility(View.VISIBLE);
 
-                    compositeDisposable.add(
-                            mealRepository.searchMealsByName(query)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(
-                                            recipes -> adapter.setSearchResults(searchResultsContainer, recipes),
-                                            throwable -> Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show()
-                                    )
-                    );
+                    presenter.searchMeals(query);
                 } else {
                     bannerContainer.setVisibility(View.VISIBLE);
                     llRecipes.setVisibility(View.VISIBLE);
@@ -128,29 +120,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 }
             }
 
-            @Override public void afterTextChanged(Editable s) { }
+            @Override
+            public void afterTextChanged(Editable s) { }
         });
     }
-
-
-    private void loadCategories() {
-        compositeDisposable.add(
-                new CategoryRepository()
-                        .getCategories()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                categories -> {
-                                    adapter.setCategories(categories);
-                                    if (!categories.isEmpty()) {
-                                        presenter.loadMealsByCategory(categories.get(0).getStrCategory());
-                                    }
-                                },
-                                e -> Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show()
-                        )
-        );
-    }
-
 
     @Override
     public void showRecipes(List<Recipe> recipes) {
@@ -158,15 +131,25 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     @Override
+    public void showCategories(List<Category> categories) {
+        adapter.setCategories(categories);
+    }
+
+    @Override
+    public void showSearchResults(List<Recipe> recipes) {
+        adapter.setSearchResults(searchResultsContainer, recipes);
+    }
+
+    @Override
     public void showRandomMeal(Recipe recipe) {
         randomMeal = recipe;
         adapter.setRandomMeal(recipe);
+        adapter.setRandomMealClickListener(v -> navigateToDetails(randomMeal));
+    }
 
-        adapter.setRandomMealClickListener(v -> {
-            Intent intent = new Intent(getContext(), MealDetailsActivity.class);
-            intent.putExtra("MEAL_ID", randomMeal.getId());
-            mealDetailsLauncher.launch(intent);
-        });
+    @Override
+    public void showError(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override public void showLoading() { }
@@ -183,7 +166,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public void onDestroyView() {
         super.onDestroyView();
         presenter.clear();
-        compositeDisposable.clear();
         if (adapter != null) adapter.clear();
     }
 }
