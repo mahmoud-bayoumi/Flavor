@@ -1,7 +1,9 @@
 package com.example.flavor.presentation.main.favorites;
 
-import com.example.flavor.data.local.AppDatabase;
+import android.content.Context;
+
 import com.example.flavor.data.local.entities.FavoriteRecipe;
+import com.example.flavor.data.repo.FavoriteRepository;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -10,26 +12,23 @@ import io.reactivex.schedulers.Schedulers;
 public class FavoritesPresenter implements FavoritesContract.Presenter {
 
     private FavoritesContract.View view;
-    private final AppDatabase database;
-    private final CompositeDisposable compositeDisposable;
+    private final FavoriteRepository favoriteRepository;
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public FavoritesPresenter(FavoritesContract.View view, AppDatabase database) {
+    public FavoritesPresenter(FavoritesContract.View view, Context context) {
         this.view = view;
-        this.database = database;
-        this.compositeDisposable = new CompositeDisposable();
+        this.favoriteRepository = new FavoriteRepository(context);
     }
 
     @Override
     public void loadFavorites() {
         compositeDisposable.add(
-                database.favoriteRecipeDao()
-                        .getAllFavorites()
+                favoriteRepository.getAllFavorites()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 favorites -> {
                                     if (view == null) return;
-
                                     if (favorites.isEmpty()) {
                                         view.showEmptyState();
                                     } else {
@@ -48,8 +47,7 @@ public class FavoritesPresenter implements FavoritesContract.Presenter {
     @Override
     public void deleteRecipe(FavoriteRecipe recipe, int position) {
         compositeDisposable.add(
-                database.favoriteRecipeDao()
-                        .delete(recipe)
+                favoriteRepository.removeFromFavorites(recipe)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

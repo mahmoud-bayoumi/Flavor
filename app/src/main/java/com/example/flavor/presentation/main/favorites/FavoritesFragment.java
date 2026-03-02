@@ -88,10 +88,8 @@ public class FavoritesFragment extends Fragment
 
         recyclerView.setAdapter(adapter);
 
-        presenter = new FavoritesPresenter(
-                this,
-                AppDatabase.getInstance(requireContext())
-        );
+        presenter = new FavoritesPresenter(this, getContext());
+
 
         presenter.loadFavorites();
 

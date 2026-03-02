@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.flavor.data.local.entities.FavoriteRecipe;
 
-@Database(entities = {FavoriteRecipe.class}, version = 1, exportSchema = false)
+@Database(entities = {FavoriteRecipe.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
@@ -24,7 +24,9 @@ public abstract class AppDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDatabase.class,
                             "flavor_db"
-                    ).build();
+                    )
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }

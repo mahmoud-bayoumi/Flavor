@@ -1,11 +1,10 @@
 package com.example.flavor.data.repo;
 
 import android.content.Context;
-import android.util.Log;
 
-import androidx.room.Room;
-
+import com.example.flavor.core.storage.PrefsManager;
 import com.example.flavor.data.local.AppDatabase;
+import com.example.flavor.data.local.FavoriteRecipeDao;
 import com.example.flavor.data.local.entities.FavoriteRecipe;
 import com.example.flavor.data.model.Recipe;
 
@@ -16,10 +15,17 @@ import io.reactivex.Single;
 
 public class FavoriteRepository {
 
-    private final AppDatabase db;
+    private final FavoriteRecipeDao dao;
+    private final PrefsManager prefsManager;
 
     public FavoriteRepository(Context context) {
-        db = Room.databaseBuilder(context, AppDatabase.class, "flavor_db").build();
+        dao = AppDatabase.getInstance(context).favoriteRecipeDao();
+        prefsManager = PrefsManager.getInstance(context);
+    }
+
+
+    private String getCurrentUserId() {
+        return prefsManager.getLoggedInUser();
     }
 
     public Completable addToFavorites(Recipe recipe) {
@@ -28,9 +34,10 @@ public class FavoriteRepository {
                 recipe.getTitle(),
                 recipe.getCategory(),
                 recipe.getImageUrl(),
-                recipe.getYoutubeUrl()
+                recipe.getYoutubeUrl(),
+                getCurrentUserId()
         );
-        return db.favoriteRecipeDao().insert(fav);
+        return dao.insert(fav);
     }
 
     public Completable removeFromFavorites(Recipe recipe) {
@@ -39,17 +46,21 @@ public class FavoriteRepository {
                 recipe.getTitle(),
                 recipe.getCategory(),
                 recipe.getImageUrl(),
-                recipe.getYoutubeUrl()
+                recipe.getYoutubeUrl(),
+                getCurrentUserId()
         );
-
-        return db.favoriteRecipeDao().delete(fav);
+        return dao.delete(fav);
     }
 
     public Single<List<FavoriteRecipe>> getAllFavorites() {
-        return db.favoriteRecipeDao().getAllFavorites();
+        return dao.getAllFavorites(getCurrentUserId());
     }
 
     public Single<Boolean> isFavorite(String recipeId) {
-        return db.favoriteRecipeDao().isFavorite(recipeId);
+        return dao.isFavorite(recipeId, getCurrentUserId());
     }
+    public Completable removeFromFavorites(FavoriteRecipe recipe) {
+        return dao.delete(recipe);
+    }
+
 }

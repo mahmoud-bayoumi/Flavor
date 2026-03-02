@@ -23,9 +23,9 @@ public interface FavoriteRecipeDao {
     @Delete
     Completable delete(FavoriteRecipe recipe);
 
-    @Query("SELECT * FROM favorite_recipes")
-    Single<List<FavoriteRecipe>> getAllFavorites();
+    @Query("SELECT * FROM favorite_recipes WHERE userId = :userId")
+    Single<List<FavoriteRecipe>> getAllFavorites(String userId);
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE id = :id)")
-    Single<Boolean> isFavorite(String id);
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE id = :id AND userId = :userId)")
+    Single<Boolean> isFavorite(String id, String userId);
 }
