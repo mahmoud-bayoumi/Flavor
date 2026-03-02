@@ -1,6 +1,7 @@
 package com.example.flavor.presentation.main.home;
 
 import com.example.flavor.data.model.Recipe;
+import com.example.flavor.data.repo.CategoryRepository;
 import com.example.flavor.data.repo.MealRepository;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -10,31 +11,51 @@ import io.reactivex.schedulers.Schedulers;
 public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View view;
-    private final MealRepository repository;
-    private final CompositeDisposable disposable = new CompositeDisposable();
+
+    private final MealRepository mealRepository;
+    private final CategoryRepository categoryRepository;
+
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public HomePresenter(HomeContract.View view) {
         this.view = view;
-        repository = new MealRepository();
+        this.mealRepository = new MealRepository();
+        this.categoryRepository = CategoryRepository.getInstance();
     }
 
     @Override
     public void loadRandomMeal() {
-        if (view == null) return;
-
-        view.showLoading();
-        disposable.add(
-                repository.getRandomMeal()
+        compositeDisposable.add(
+                mealRepository.getRandomMeal()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 recipe -> {
-                                    if (view == null) return;
-                                    view.hideLoading();
-                                    view.showRandomMeal(recipe);
+                                    if (view != null) view.showRandomMeal(recipe);
                                 },
                                 throwable -> {
-                                    if (view != null) view.hideLoading();
+                                    if (view != null) view.showError("Failed to load meal");
+                                }
+                        )
+        );
+    }
+
+    @Override
+    public void loadCategories() {
+        compositeDisposable.add(
+                categoryRepository.getCategories()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                categories -> {
+                                    if (view == null) return;
+                                    view.showCategories(categories);
+                                    if (!categories.isEmpty()) {
+                                        loadMealsByCategory(categories.get(0).getStrCategory());
+                                    }
+                                },
+                                throwable -> {
+                                    if (view != null) view.showError("Failed to load categories");
                                 }
                         )
         );
@@ -42,21 +63,33 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void loadMealsByCategory(String category) {
-        if (view == null) return;
-
-        view.showLoading();
-        disposable.add(
-                repository.getMealsByCategory(category)
+        compositeDisposable.add(
+                mealRepository.getMealsByCategory(category)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 recipes -> {
-                                    if (view == null) return;
-                                    view.hideLoading();
-                                    view.showRecipes(recipes);
+                                    if (view != null) view.showRecipes(recipes);
                                 },
                                 throwable -> {
-                                    if (view != null) view.hideLoading();
+                                    if (view != null) view.showError("Failed to load recipes");
+                                }
+                        )
+        );
+    }
+
+    @Override
+    public void searchMeals(String query) {
+        compositeDisposable.add(
+                mealRepository.searchMealsByName(query)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                recipes -> {
+                                    if (view != null) view.showSearchResults(recipes);
+                                },
+                                throwable -> {
+                                    if (view != null) view.showError("Search failed");
                                 }
                         )
         );
@@ -69,7 +102,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void clear() {
-        disposable.clear();
+        compositeDisposable.clear();
         view = null;
     }
 }
