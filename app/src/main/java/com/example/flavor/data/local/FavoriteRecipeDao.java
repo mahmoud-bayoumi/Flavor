@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Delete;
 
-
 import com.example.flavor.data.local.entities.FavoriteRecipe;
 
 import java.util.List;
@@ -28,4 +27,7 @@ public interface FavoriteRecipeDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_recipes WHERE id = :id AND userId = :userId)")
     Single<Boolean> isFavorite(String id, String userId);
+
+    @Query("DELETE FROM favorite_recipes WHERE id = :id AND userId = :userId")
+    Completable deleteById(String id, String userId);
 }

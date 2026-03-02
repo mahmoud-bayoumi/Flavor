@@ -23,7 +23,6 @@ public class FavoriteRepository {
         prefsManager = PrefsManager.getInstance(context);
     }
 
-
     private String getCurrentUserId() {
         return prefsManager.getLoggedInUser();
     }
@@ -41,15 +40,17 @@ public class FavoriteRepository {
     }
 
     public Completable removeFromFavorites(Recipe recipe) {
-        FavoriteRecipe fav = new FavoriteRecipe(
+        return dao.deleteById(
                 recipe.getId(),
-                recipe.getTitle(),
-                recipe.getCategory(),
-                recipe.getImageUrl(),
-                recipe.getYoutubeUrl(),
                 getCurrentUserId()
         );
-        return dao.delete(fav);
+    }
+
+    public Completable removeFromFavorites(FavoriteRecipe recipe) {
+        return dao.deleteById(
+                recipe.getId(),
+                getCurrentUserId()
+        );
     }
 
     public Single<List<FavoriteRecipe>> getAllFavorites() {
@@ -59,8 +60,4 @@ public class FavoriteRepository {
     public Single<Boolean> isFavorite(String recipeId) {
         return dao.isFavorite(recipeId, getCurrentUserId());
     }
-    public Completable removeFromFavorites(FavoriteRecipe recipe) {
-        return dao.delete(recipe);
-    }
-
 }
